@@ -17,6 +17,7 @@ import {
   Inbox,
   Shield,
   Activity,
+  MessageSquare,
 } from "lucide-react";
 
 const Navigation = () => {
@@ -30,12 +31,14 @@ const Navigation = () => {
     { icon: Plus, label: "Raise Ticket", path: "/employee/raise-ticket" },
     { icon: ListTodo, label: "My Tickets", path: "/employee/my-tickets" },
     { icon: BookOpen, label: "Knowledge Base", path: "/employee/knowledge-base" },
+    { icon: MessageSquare, label: "Consultation Logs", path: "/employee/consultation-logs" },
   ];
 
   const technicianLinks = [
     { icon: Home, label: "Dashboard", path: "/technician/dashboard" },
     { icon: Inbox, label: "Assigned Tickets", path: "/technician/assigned-tickets" },
     { icon: Activity, label: "Update Status", path: "/technician/update-status" },
+    { icon: MessageSquare, label: "Consultation Logs", path: "/technician/consultation-logs" },
   ];
 
   const adminLinks = [
@@ -43,6 +46,7 @@ const Navigation = () => {
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
     { icon: Users, label: "Team", path: "/admin/team" },
     { icon: Shield, label: "SLA Monitor", path: "/admin/sla-monitor" },
+    { icon: MessageSquare, label: "Consultation Logs", path: "/admin/consultation-logs" },
     { icon: Settings, label: "Settings", path: "/admin/settings" },
   ];
 

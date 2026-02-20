@@ -27,6 +27,7 @@ import SLAMonitor from "./pages/SLAMonitor";
 import Analytics from "./pages/Analytics";
 import Team from "./pages/Team";
 import Settings from "./pages/Settings";
+import ConsultationLogs from "./pages/ConsultationLogs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/employee/my-tickets" element={<ProtectedRoute requiredRole="employee"><MyTickets /></ProtectedRoute>} />
             <Route path="/employee/ticket-details" element={<ProtectedRoute requiredRole="employee"><TicketDetails /></ProtectedRoute>} />
             <Route path="/employee/knowledge-base" element={<ProtectedRoute requiredRole="employee"><KnowledgeBase /></ProtectedRoute>} />
+            <Route path="/employee/consultation-logs" element={<ProtectedRoute requiredRole="employee"><ConsultationLogs /></ProtectedRoute>} />
             <Route path="/employee/profile" element={<ProtectedRoute requiredRole="employee"><Profile /></ProtectedRoute>} />
 
             {/* Technician */}
@@ -59,6 +61,7 @@ const App = () => (
             <Route path="/technician/assigned-tickets" element={<ProtectedRoute requiredRole="technician"><AssignedTickets /></ProtectedRoute>} />
             <Route path="/technician/ticket-details" element={<ProtectedRoute requiredRole="technician"><TicketDetails /></ProtectedRoute>} />
             <Route path="/technician/update-status" element={<ProtectedRoute requiredRole="technician"><UpdateStatus /></ProtectedRoute>} />
+            <Route path="/technician/consultation-logs" element={<ProtectedRoute requiredRole="technician"><ConsultationLogs /></ProtectedRoute>} />
             <Route path="/technician/profile" element={<ProtectedRoute requiredRole="technician"><Profile /></ProtectedRoute>} />
 
             {/* Admin */}
@@ -72,6 +75,8 @@ const App = () => (
             <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
             <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><Analytics /></ProtectedRoute>} />
             <Route path="/admin/team" element={<ProtectedRoute requiredRole="admin"><Team /></ProtectedRoute>} />
+            <Route path="/admin/consultation-logs" element={<ProtectedRoute requiredRole="admin"><ConsultationLogs /></ProtectedRoute>} />
+            <Route path="/admin/profile" element={<ProtectedRoute requiredRole="admin"><Profile /></ProtectedRoute>} />
 
             {/* Legacy redirects */}
             <Route path="/create-ticket" element={<Navigate to="/employee/raise-ticket" replace />} />

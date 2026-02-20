@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const Profile = () => {
-  const { user, userName, role } = useAuth();
+  const { user, userName, role, setUser } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,19 +71,54 @@ const Profile = () => {
   }, [user]);
 
   const handleSaveProfile = async () => {
+    // Validate username before saving
+    if (!username || username.trim().length < 3) {
+      toast({
+        title: "Validation Error",
+        description: "Username must be at least 3 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!/^[a-z0-9_]+$/.test(username)) {
+      toast({
+        title: "Validation Error",
+        description: "Username can only contain lowercase letters, numbers, and underscores",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await api.updateProfile({ username, name, phoneNumber, department });
+      // Only send username if it has changed
+      const profileData: any = {
+        name,
+        phoneNumber,
+        department
+      };
+
+      // Only include username if it has actually changed
+      if (username !== user?.username) {
+        profileData.username = username;
+      }
+
+      const response = await api.updateProfile(profileData);
       if (response.success) {
+        // Update the user context with new data
+        if (response.data.user) {
+          setUser(response.data.user);
+        }
+        
         toast({
           title: "Profile updated",
           description: "Your profile has been updated successfully",
         });
         setIsEditing(false);
-        // Reload user data
-        await api.getMe();
       }
     } catch (error: any) {
+      console.error("Profile update error:", error);
       toast({
         title: "Failed to update profile",
         description: error.message || "Something went wrong",
@@ -304,33 +339,49 @@ const Profile = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* User ID */}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                <IdCard className="w-4 h-4" />
-                User ID
-              </label>
-              <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground font-mono">
-                {user?._id || "N/A"}
+            {/* User ID - Hide for Admin */}
+            {role !== 'admin' && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                  <IdCard className="w-4 h-4" />
+                  User ID
+                </label>
+                <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground font-mono">
+                  {user?._id || "N/A"}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Username */}
             <div>
               <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Username
+                {isEditing && <span className="text-red-500 text-xs">*Required</span>}
               </label>
               {isEditing ? (
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                  className="w-full bg-secondary/80 border border-border/50 rounded-lg px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  placeholder="Enter username (lowercase, alphanumeric, underscore)"
-                  minLength={3}
-                  maxLength={30}
-                />
+                <div>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                    className={`w-full bg-secondary/80 border rounded-lg px-4 py-3 text-sm text-foreground outline-none focus:ring-2 transition-all ${
+                      username.length < 3 && username.length > 0
+                        ? 'border-red-500/50 focus:ring-red-500/50'
+                        : 'border-border/50 focus:ring-primary/50'
+                    }`}
+                    placeholder="Enter username (lowercase, alphanumeric, underscore)"
+                    minLength={3}
+                    maxLength={30}
+                    required
+                  />
+                  {username.length > 0 && username.length < 3 && (
+                    <p className="text-xs text-red-500 mt-1">Username must be at least 3 characters</p>
+                  )}
+                  {!username && (
+                    <p className="text-xs text-yellow-500 mt-1">Username is required</p>
+                  )}
+                </div>
               ) : (
                 <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground">
                   @{username || "Not set"}
@@ -338,26 +389,28 @@ const Profile = () => {
               )}
             </div>
 
-            {/* Full Name */}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Full Name
-              </label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-secondary/80 border border-border/50 rounded-lg px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  placeholder="Enter your full name"
-                />
-              ) : (
-                <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground">
-                  {name || "Not set"}
-                </div>
-              )}
-            </div>
+            {/* Full Name - Hide for Admin */}
+            {role !== 'admin' && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Full Name
+                </label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-secondary/80 border border-border/50 rounded-lg px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    placeholder="Enter your full name"
+                  />
+                ) : (
+                  <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground">
+                    {name || "Not set"}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Email */}
             <div>
@@ -391,44 +444,59 @@ const Profile = () => {
               )}
             </div>
 
-            {/* Department */}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                <Briefcase className="w-4 h-4" />
-                Department
-              </label>
-              {isEditing ? (
-                <Select value={department} onValueChange={setDepartment}>
-                  <SelectTrigger className="w-full bg-secondary/80 border border-border/50 rounded-lg px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/50 transition-all">
-                    <SelectValue placeholder="Select your department" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-secondary/95 backdrop-blur-lg border-border rounded-xl">
-                    <SelectItem value="Software Development">Software Development</SelectItem>
-                    <SelectItem value="Frontend Development">Frontend Development</SelectItem>
-                    <SelectItem value="Backend Development">Backend Development</SelectItem>
-                    <SelectItem value="Full Stack Development">Full Stack Development</SelectItem>
-                    <SelectItem value="Mobile Development">Mobile Development</SelectItem>
-                    <SelectItem value="Quality Assurance">Quality Assurance (QA/Testing)</SelectItem>
-                    <SelectItem value="DevOps">DevOps & CI/CD</SelectItem>
-                    <SelectItem value="Cloud Infrastructure">Cloud Infrastructure</SelectItem>
-                    <SelectItem value="Data Science">Data Science & Analytics</SelectItem>
-                    <SelectItem value="Machine Learning">Machine Learning & AI</SelectItem>
-                    <SelectItem value="Cybersecurity">Cybersecurity</SelectItem>
-                    <SelectItem value="IT Support">IT Support & Helpdesk</SelectItem>
-                    <SelectItem value="System Administration">System Administration</SelectItem>
-                    <SelectItem value="Network Engineering">Network Engineering</SelectItem>
-                    <SelectItem value="Database Administration">Database Administration</SelectItem>
-                    <SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
-                    <SelectItem value="Product Management">Product Management</SelectItem>
-                    <SelectItem value="Project Management">Project Management</SelectItem>
-                    <SelectItem value="Business Analysis">Business Analysis</SelectItem>
-                    <SelectItem value="Technical Writing">Technical Writing & Documentation</SelectItem>
-                    <SelectItem value="Human Resources">Human Resources</SelectItem>
-                    <SelectItem value="Finance">Finance & Accounting</SelectItem>
-                    <SelectItem value="Sales">Sales & Business Development</SelectItem>
-                    <SelectItem value="Marketing">Marketing & Communications</SelectItem>
-                    <SelectItem value="Administration">Administration</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+            {/* Department/Domain - Hide for Admin, show for Employee (Department) and Technician (Domain) */}
+            {role !== 'admin' && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                  <Briefcase className="w-4 h-4" />
+                  {role === 'technician' ? 'Domain' : 'Department'}
+                </label>
+                {isEditing ? (
+                  <Select value={department} onValueChange={setDepartment}>
+                    <SelectTrigger className="w-full bg-secondary/80 border border-border/50 rounded-lg px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                      <SelectValue placeholder={role === 'technician' ? 'Select your domain' : 'Select your department'} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-secondary/95 backdrop-blur-lg border-border rounded-xl">
+                      {role === 'technician' ? (
+                        <>
+                          <SelectItem value="Network">Network</SelectItem>
+                          <SelectItem value="Software">Software</SelectItem>
+                          <SelectItem value="Hardware">Hardware</SelectItem>
+                          <SelectItem value="Access">Access</SelectItem>
+                          <SelectItem value="Security">Security</SelectItem>
+                          <SelectItem value="Gmail">Gmail</SelectItem>
+                          <SelectItem value="Others">Others</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="Software Development">Software Development</SelectItem>
+                          <SelectItem value="Frontend Development">Frontend Development</SelectItem>
+                          <SelectItem value="Backend Development">Backend Development</SelectItem>
+                          <SelectItem value="Full Stack Development">Full Stack Development</SelectItem>
+                          <SelectItem value="Mobile Development">Mobile Development</SelectItem>
+                          <SelectItem value="Quality Assurance">Quality Assurance (QA/Testing)</SelectItem>
+                          <SelectItem value="DevOps">DevOps & CI/CD</SelectItem>
+                          <SelectItem value="Cloud Infrastructure">Cloud Infrastructure</SelectItem>
+                          <SelectItem value="Data Science">Data Science & Analytics</SelectItem>
+                          <SelectItem value="Machine Learning">Machine Learning & AI</SelectItem>
+                          <SelectItem value="Cybersecurity">Cybersecurity</SelectItem>
+                          <SelectItem value="IT Support">IT Support & Helpdesk</SelectItem>
+                          <SelectItem value="System Administration">System Administration</SelectItem>
+                          <SelectItem value="Network Engineering">Network Engineering</SelectItem>
+                          <SelectItem value="Database Administration">Database Administration</SelectItem>
+                          <SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
+                        <SelectItem value="Product Management">Product Management</SelectItem>
+                        <SelectItem value="Project Management">Project Management</SelectItem>
+                        <SelectItem value="Business Analysis">Business Analysis</SelectItem>
+                        <SelectItem value="Technical Writing">Technical Writing & Documentation</SelectItem>
+                        <SelectItem value="Human Resources">Human Resources</SelectItem>
+                        <SelectItem value="Finance">Finance & Accounting</SelectItem>
+                        <SelectItem value="Sales">Sales & Business Development</SelectItem>
+                        <SelectItem value="Marketing">Marketing & Communications</SelectItem>
+                        <SelectItem value="Administration">Administration</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               ) : (
@@ -436,29 +504,34 @@ const Profile = () => {
                   {department || "Not set"}
                 </div>
               )}
-            </div>
-
-            {/* Role */}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Role
-              </label>
-              <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground capitalize">
-                {role || "Not set"}
               </div>
-            </div>
+            )}
 
-            {/* Last Login */}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Last Login
-              </label>
-              <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground">
-                {formatDate(user?.lastLogin)}
+            {/* Role - Hide for Admin */}
+            {role !== 'admin' && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Role
+                </label>
+                <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground capitalize">
+                  {role || "Not set"}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Last Login - Hide for Admin */}
+            {role !== 'admin' && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Last Login
+                </label>
+                <div className="bg-secondary/50 border border-border/30 rounded-lg px-4 py-3 text-sm text-foreground">
+                  {formatDate(user?.lastLogin)}
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
 

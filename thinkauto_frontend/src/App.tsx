@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/employee/dashboard" element={<ProtectedRoute requiredRole="employee"><EmployeeDashboard /></ProtectedRoute>} />
             <Route path="/employee/raise-ticket" element={<ProtectedRoute requiredRole="employee"><CreateTicket /></ProtectedRoute>} />
             <Route path="/employee/my-tickets" element={<ProtectedRoute requiredRole="employee"><MyTickets /></ProtectedRoute>} />
+            <Route path="/employee/tickets/:id" element={<ProtectedRoute requiredRole="employee"><TicketDetails /></ProtectedRoute>} />
             <Route path="/employee/ticket-details" element={<ProtectedRoute requiredRole="employee"><TicketDetails /></ProtectedRoute>} />
             <Route path="/employee/knowledge-base" element={<ProtectedRoute requiredRole="employee"><KnowledgeBase /></ProtectedRoute>} />
             <Route path="/employee/consultation-logs" element={<ProtectedRoute requiredRole="employee"><ConsultationLogs /></ProtectedRoute>} />
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/technician" element={<Navigate to="/technician/dashboard" replace />} />
             <Route path="/technician/dashboard" element={<ProtectedRoute requiredRole="technician"><TechnicianDashboard /></ProtectedRoute>} />
             <Route path="/technician/assigned-tickets" element={<ProtectedRoute requiredRole="technician"><AssignedTickets /></ProtectedRoute>} />
+            <Route path="/technician/tickets/:id" element={<ProtectedRoute requiredRole="technician"><TicketDetails /></ProtectedRoute>} />
             <Route path="/technician/ticket-details" element={<ProtectedRoute requiredRole="technician"><TicketDetails /></ProtectedRoute>} />
             <Route path="/technician/update-status" element={<ProtectedRoute requiredRole="technician"><UpdateStatus /></ProtectedRoute>} />
             <Route path="/technician/consultation-logs" element={<ProtectedRoute requiredRole="technician"><ConsultationLogs /></ProtectedRoute>} />
@@ -68,6 +70,7 @@ const App = () => (
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/all-tickets" element={<ProtectedRoute requiredRole="admin"><AllTickets /></ProtectedRoute>} />
+            <Route path="/admin/tickets/:id" element={<ProtectedRoute requiredRole="admin"><TicketDetails /></ProtectedRoute>} />
             <Route path="/admin/assign-ticket" element={<ProtectedRoute requiredRole="admin"><AssignTicket /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><Users /></ProtectedRoute>} />
             <Route path="/admin/reports" element={<ProtectedRoute requiredRole="admin"><Reports /></ProtectedRoute>} />

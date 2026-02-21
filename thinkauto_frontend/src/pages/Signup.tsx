@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import BrandLogo from "@/components/BrandLogo";
@@ -25,6 +25,22 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   
+  const navigate = useNavigate();
+  const { isAuthenticated, role: userRole, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      const paths = {
+        employee: "/employee/dashboard",
+        technician: "/technician/dashboard",
+        admin: "/admin/dashboard",
+      };
+      navigate(paths[userRole], { replace: true });
+    }
+  }, [isAuthenticated, userRole, authLoading, navigate]);
+  
   // Validation states
   const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -36,9 +52,7 @@ const Signup = () => {
     confirmPassword: false,
   });
 
-  const navigate = useNavigate();
   const { login } = useAuth();
-  const { toast } = useToast();
 
   // Validation functions
   const validateUsername = (value: string): string => {

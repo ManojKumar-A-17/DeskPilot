@@ -1,0 +1,295 @@
+{
+  "name": "ThinkAuto - Auto Assign Technician & Send Emails",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ticket-created",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-ticket-created",
+      "name": "Webhook - Ticket Created",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "webhookId": "auto-assign-ticket"
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:5000/api/tickets/{{ $json.ticketId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "fetch-ticket-details",
+      "name": "Fetch Ticket Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [470, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "ThinkAuto API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5000/api/users/technicians",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "fetch-technicians",
+      "name": "Fetch Available Technicians",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [690, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "ThinkAuto API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "messages": {
+          "values": [
+            {
+              "message": "=You are an IT helpdesk AI that assigns technicians based on ticket details.\n\nTicket Information:\n- Title: {{ $('Fetch Ticket Details').item.json.data.ticket.title }}\n- Description: {{ $('Fetch Ticket Details').item.json.data.ticket.description }}\n- Category: {{ $('Fetch Ticket Details').item.json.data.ticket.category }}\n- Priority: {{ $('Fetch Ticket Details').item.json.data.ticket.priority }}\n\nAvailable Technicians:\n{{ $('Fetch Available Technicians').item.json.data.users.map((tech, idx) => `${idx + 1}. ${tech.name} - Department: ${tech.department || 'General'} - Workload: ${tech.assignedTickets || 0} tickets`).join('\\n') }}\n\nAnalyze the ticket and select the BEST technician based on:\n1. Department match (if ticket category matches technician department)\n2. Current workload (prefer less busy technicians)\n3. Expertise area\n\nRespond with ONLY a JSON object in this exact format:\n{\n  \"selectedTechnicianIndex\": 0,\n  \"reason\": \"Brief reason for selection\"\n}\n\nDo not include any other text, just the JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 200
+        },
+        "model": "llama-3.3-70b-versatile"
+      },
+      "id": "groq-select-technician",
+      "name": "Groq - Select Best Technician",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [910, 300],
+      "credentials": {
+        "groqApi": {
+          "id": "2",
+          "name": "Groq API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Groq AI response and select technician\nconst groqResponse = $('Groq - Select Best Technician').item.json.response;\nconst technicians = $('Fetch Available Technicians').item.json.data.users;\nconst ticket = $('Fetch Ticket Details').item.json.data.ticket;\n\ntry {\n  // Extract JSON from response\n  const jsonMatch = groqResponse.match(/\\{[^{}]*\\}/);\n  const aiDecision = JSON.parse(jsonMatch[0]);\n  \n  const selectedTech = technicians[aiDecision.selectedTechnicianIndex];\n  \n  return {\n    ticketId: ticket._id,\n    ticketNumber: ticket.ticketNumber,\n    ticketTitle: ticket.title,\n    ticketDescription: ticket.description,\n    ticketPriority: ticket.priority,\n    ticketCategory: ticket.category,\n    technicianId: selectedTech._id,\n    technicianName: selectedTech.name,\n    technicianEmail: selectedTech.email,\n    userName: ticket.createdBy.name,\n    userEmail: ticket.createdBy.email,\n    assignmentReason: aiDecision.reason\n  };\n} catch (error) {\n  // Fallback to first available technician\n  const selectedTech = technicians[0];\n  return {\n    ticketId: ticket._id,\n    ticketNumber: ticket.ticketNumber,\n    ticketTitle: ticket.title,\n    ticketDescription: ticket.description,\n    ticketPriority: ticket.priority,\n    ticketCategory: ticket.category,\n    technicianId: selectedTech._id,\n    technicianName: selectedTech.name,\n    technicianEmail: selectedTech.email,\n    userName: ticket.createdBy.name,\n    userEmail: ticket.createdBy.email,\n    assignmentReason: 'Auto-assigned to available technician'\n  };\n}"
+      },
+      "id": "process-assignment",
+      "name": "Process Assignment Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1130, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://localhost:5000/api/tickets/{{ $json.ticketId }}/assign",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "technicianId",
+              "value": "={{ $json.technicianId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "assign-technician",
+      "name": "Assign Technician to Ticket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1350, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "ThinkAuto API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.userEmail }}",
+        "subject": "=Ticket {{ $json.ticketNumber }} - Assigned to Technician",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }\n    .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }\n    .info-box { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #FF6B35; }\n    .button { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1 style=\"margin: 0;\">🎫 Technician Assigned</h1>\n      <p style=\"margin: 5px 0 0 0;\">ThinkAuto AI HelpDesk</p>\n    </div>\n    <div class=\"content\">\n      <p>Hello <strong>{{ $json.userName }}</strong>,</p>\n      <p>Great news! Your support ticket has been assigned to a technician.</p>\n      \n      <div class=\"info-box\">\n        <p><strong>Ticket Number:</strong> {{ $json.ticketNumber }}</p>\n        <p><strong>Title:</strong> {{ $json.ticketTitle }}</p>\n        <p><strong>Priority:</strong> {{ $json.ticketPriority }}</p>\n        <p><strong>Assigned Technician:</strong> {{ $json.technicianName }}</p>\n        <p><strong>Reason:</strong> {{ $json.assignmentReason }}</p>\n      </div>\n      \n      <p>Your technician will review your ticket and get back to you shortly.</p>\n      \n      <a href=\"http://localhost:8081/employee/tickets/{{ $json.ticketId }}\" class=\"button\">View Ticket Status</a>\n      \n      <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">\n        This is an automated message from ThinkAuto AI HelpDesk. Please do not reply to this email.\n      </p>\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "send-email-user",
+      "name": "Send Email to User",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1570, 200],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3",
+          "name": "Gmail OAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.technicianEmail }}",
+        "subject": "=New Ticket Assigned: {{ $json.ticketNumber }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }\n    .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }\n    .ticket-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }\n    .priority-high { color: #d32f2f; font-weight: bold; }\n    .priority-medium { color: #f57c00; font-weight: bold; }\n    .priority-low { color: #388e3c; font-weight: bold; }\n    .button { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1 style=\"margin: 0;\">🔧 New Ticket Assigned to You</h1>\n      <p style=\"margin: 5px 0 0 0;\">ThinkAuto AI HelpDesk</p>\n    </div>\n    <div class=\"content\">\n      <p>Hello <strong>{{ $json.technicianName }}</strong>,</p>\n      <p>A new support ticket has been assigned to you by our AI assignment system.</p>\n      \n      <div class=\"ticket-details\">\n        <h3 style=\"margin-top: 0; color: #FF6B35;\">Ticket Details</h3>\n        <p><strong>Ticket Number:</strong> {{ $json.ticketNumber }}</p>\n        <p><strong>Title:</strong> {{ $json.ticketTitle }}</p>\n        <p><strong>Description:</strong><br/>{{ $json.ticketDescription }}</p>\n        <p><strong>Category:</strong> {{ $json.ticketCategory }}</p>\n        <p><strong>Priority:</strong> <span class=\"priority-{{ $json.ticketPriority.toLowerCase() }}\">{{ $json.ticketPriority }}</span></p>\n        <p><strong>Reported By:</strong> {{ $json.userName }} ({{ $json.userEmail }})</p>\n        <p><strong>Assignment Reason:</strong> {{ $json.assignmentReason }}</p>\n      </div>\n      \n      <p>Please review the ticket and begin working on it as soon as possible.</p>\n      \n      <a href=\"http://localhost:8081/technician/tickets/{{ $json.ticketId }}\" class=\"button\">View Ticket</a>\n      \n      <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">\n        This is an automated message from ThinkAuto AI HelpDesk.\n      </p>\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "send-email-technician",
+      "name": "Send Email to Technician",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1570, 400],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3",
+          "name": "Gmail OAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Ticket assigned and emails sent\", \"ticketNumber\": $json.ticketNumber, \"assignedTo\": $json.technicianName } }}",
+        "options": {}
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1790, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": false, \"error\": $json.error.message } }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1350, 500]
+    }
+  ],
+  "connections": {
+    "Webhook - Ticket Created": {
+      "main": [
+        [
+          {
+            "node": "Fetch Ticket Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Ticket Details": {
+      "main": [
+        [
+          {
+            "node": "Fetch Available Technicians",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Available Technicians": {
+      "main": [
+        [
+          {
+            "node": "Groq - Select Best Technician",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq - Select Best Technician": {
+      "main": [
+        [
+          {
+            "node": "Process Assignment Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Assignment Data": {
+      "main": [
+        [
+          {
+            "node": "Assign Technician to Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign Technician to Ticket": {
+      "main": [
+        [
+          {
+            "node": "Send Email to User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email to Technician",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to User": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Technician": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-02-21T00:00:00.000Z",
+  "versionId": "1"
+}

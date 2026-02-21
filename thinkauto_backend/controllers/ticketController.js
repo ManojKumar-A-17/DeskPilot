@@ -1,5 +1,6 @@
 import Ticket from '../models/Ticket.js';
 import User from '../models/User.js';
+import { sendEmail, getNewTicketEmailTemplate } from '../config/email.js';
 
 // @desc    Create new ticket
 // @route   POST /api/tickets
@@ -8,7 +9,12 @@ export const createTicket = async (req, res) => {
   try {
     const { title, description, category, priority } = req.body;
 
+    // Generate ticket number
+    const count = await Ticket.countDocuments();
+    const ticketNumber = `TKT-${String(count + 1).padStart(6, '0')}`;
+
     const ticket = await Ticket.create({
+      ticketNumber,
       title,
       description,
       category,
@@ -20,6 +26,49 @@ export const createTicket = async (req, res) => {
       { path: 'createdBy', select: 'name email role' },
       { path: 'assignedTo', select: 'name email role' }
     ]);
+
+    // Send email notification asynchronously (don't wait for it)
+    // This prevents email issues from slowing down ticket creation
+    if (process.env.NOTIFICATION_EMAIL) {
+      const emailHtml = getNewTicketEmailTemplate(ticket, ticket.createdBy);
+      
+      // Fire and forget - don't await
+      sendEmail(
+        process.env.NOTIFICATION_EMAIL,
+        `New Ticket Created: ${ticket.ticketNumber} - ${ticket.title}`,
+        emailHtml
+      ).then(emailResult => {
+        if (emailResult.disabled) {
+          console.log(`📧 Email notifications disabled for ticket ${ticket.ticketNumber}`);
+        } else if (emailResult.success) {
+          console.log(`✅ Email sent successfully for ticket ${ticket.ticketNumber}`);
+          if (emailResult.previewUrl) {
+            console.log(`📧 Preview: ${emailResult.previewUrl}`);
+          }
+        } else {
+          console.log(`❌ Email failed for ticket ${ticket.ticketNumber}: ${emailResult.error}`);
+        }
+      }).catch(err => {
+        console.error(`❌ Email error for ticket ${ticket.ticketNumber}:`, err.message);
+      });
+    }
+
+    // Trigger n8n webhook for auto-assignment (if enabled)
+    if (process.env.N8N_WEBHOOK_URL && process.env.N8N_AUTO_ASSIGN === 'true') {
+      fetch(process.env.N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketId: ticket._id })
+      }).then(response => {
+        if (response.ok) {
+          console.log(`🤖 n8n auto-assignment triggered for ticket ${ticket.ticketNumber}`);
+        } else {
+          console.log(`⚠️ n8n webhook returned status ${response.status}`);
+        }
+      }).catch(err => {
+        console.log(`⚠️ n8n webhook failed: ${err.message}`);
+      });
+    }
 
     res.status(201).json({
       success: true,

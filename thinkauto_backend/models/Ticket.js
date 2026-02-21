@@ -4,7 +4,7 @@ const ticketSchema = new mongoose.Schema({
   ticketNumber: {
     type: String,
     unique: true,
-    required: true
+    required: false  // Changed to false since it's auto-generated
   },
   title: {
     type: String,

@@ -176,6 +176,18 @@ class ApiService {
   async getUserStats() {
     return this.request('/users/stats');
   }
+
+  // Chatbot
+  async sendChatMessage(message, conversationHistory = []) {
+    return this.request('/chatbot/message', {
+      method: 'POST',
+      body: JSON.stringify({ message, conversationHistory }),
+    });
+  }
+
+  async getChatbotStatus() {
+    return this.request('/chatbot/status');
+  }
 }
 
 export default new ApiService();

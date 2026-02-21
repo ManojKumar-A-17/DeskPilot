@@ -6,6 +6,7 @@ import connectDB from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import chatbotRoutes from './routes/chatbotRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(morgan('dev'));
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -49,7 +51,8 @@ app.get('/', (req, res) => {
       health: '/api/health',
       auth: '/api/auth',
       tickets: '/api/tickets',
-      users: '/api/users'
+      users: '/api/users',
+      chatbot: '/api/chatbot'
     }
   });
 });

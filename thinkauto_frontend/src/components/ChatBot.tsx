@@ -2,15 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Bot, Sparkles, Loader2, Trash2, Minimize2, Maximize2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import api from "@/lib/api";
 
 interface Message {
   role: "bot" | "user";
   text: string;
   timestamp: Date;
 }
-
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || "";
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,45 +33,20 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const sendMessageToGroq = async (userMessage: string) => {
+  const sendMessageToBackend = async (userMessage: string) => {
     try {
-      const response = await fetch(GROQ_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${GROQ_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "mixtral-8x7b-32768",
-          messages: [
-            {
-              role: "system",
-              content: "You are ThinkAuto AI, a helpful and intelligent IT helpdesk assistant for ThinkAuto company. You help employees with technical issues, software problems, hardware troubleshooting, network connectivity, access requests, and general IT queries. Be concise, professional, and helpful. If you can't solve an issue directly, suggest creating a support ticket."
-            },
-            ...messages.map(m => ({
-              role: m.role === "bot" ? "assistant" : "user",
-              content: m.text
-            })),
-            {
-              role: "user",
-              content: userMessage
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 1024,
-          top_p: 1,
-          stream: false
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+      // Prepare conversation history for backend
+      const conversationHistory = messages.filter(msg => msg.role !== 'bot' || msg.text !== messages[0].text);
+      
+      const response = await api.sendChatMessage(userMessage, conversationHistory);
+      
+      if (response.success) {
+        return response.data.response;
+      } else {
+        throw new Error(response.message || 'Failed to get response from chatbot');
       }
-
-      const data = await response.json();
-      return data.choices[0]?.message?.content || "I apologize, but I couldn't generate a response. Please try again.";
     } catch (error) {
-      console.error("Groq API error:", error);
+      console.error('Backend chatbot error:', error);
       return "I'm having trouble connecting right now. Please try again in a moment or create a support ticket for immediate assistance.";
     }
   };
@@ -94,8 +67,8 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      // Get AI response
-      const botResponse = await sendMessageToGroq(userMessage);
+      // Get AI response from backend
+      const botResponse = await sendMessageToBackend(userMessage);
       
       // Add bot response
       const newBotMessage: Message = {

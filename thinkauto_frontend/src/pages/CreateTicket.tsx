@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { motion } from "framer-motion";
-import { Send, Sparkles, Paperclip } from "lucide-react";
+import { Send, Sparkles, Paperclip, Loader2 } from "lucide-react";
+import api from "@/lib/api";
+import { toast } from "@/components/ui/sonner";
 
 const categories = ["Network", "Hardware", "Software", "Access & Permissions", "Email", "Other"];
 const priorities = ["Low", "Medium", "High", "Critical"];
@@ -12,11 +14,46 @@ const CreateTicket = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [priority, setPriority] = useState("Medium");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/employee/dashboard");
+    
+    try {
+      setIsSubmitting(true);
+      
+      const response = await api.createTicket({
+        title,
+        description,
+        category,
+        priority
+      });
+      
+      if (response.success) {
+        toast.success('Ticket created successfully!', {
+          description: 'Your ticket has been submitted and will be reviewed shortly.'
+        });
+        
+        // Reset form
+        setTitle("");
+        setDescription("");
+        setCategory("");
+        setPriority("Medium");
+        
+        // Navigate to my tickets after a short delay
+        setTimeout(() => {
+          navigate("/employee/my-tickets");
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      toast.error('Failed to create ticket', {
+        description: 'Please try again or contact support if the issue persists.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -105,9 +142,18 @@ const CreateTicket = () => {
 
           <button
             type="submit"
-            className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl glow-orange hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl glow-orange hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Send className="w-4 h-4" /> Submit Ticket
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4" /> Submit Ticket
+              </>
+            )}
           </button>
         </form>
       </motion.div>

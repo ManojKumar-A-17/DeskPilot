@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import BrandLogo from "@/components/BrandLogo";
@@ -21,8 +21,20 @@ const Login = () => {
   const [role, setRole] = useState<UserRole>("employee");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, role: userRole, loading: authLoading } = useAuth();
   const { toast } = useToast();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      const paths = {
+        employee: "/employee/dashboard",
+        technician: "/technician/dashboard",
+        admin: "/admin/dashboard",
+      };
+      navigate(paths[userRole], { replace: true });
+    }
+  }, [isAuthenticated, userRole, authLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Clock, AlertTriangle, CheckCircle2, Circle, ArrowRight } from "lucide-react";
+import { Clock, AlertTriangle, CheckCircle2, Circle, ArrowRight, CheckCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type TicketStatus = "open" | "in_progress" | "resolved" | "urgent";
 export type TicketPriority = "low" | "medium" | "high" | "critical";
@@ -14,6 +15,9 @@ interface TicketCardProps {
   assignee?: string;
   createdAt: string;
   onClick?: () => void;
+  showCompleteButton?: boolean;
+  onComplete?: (ticketId: string) => void;
+  isCompleting?: boolean;
 }
 
 const statusConfig = {
@@ -30,8 +34,14 @@ const priorityColors = {
   critical: "bg-destructive/15 text-destructive",
 };
 
-const TicketCard = ({ id, title, description, status, priority, slaTime, assignee, createdAt, onClick }: TicketCardProps) => {
+const TicketCard = ({ id, title, description, status, priority, slaTime, assignee, createdAt, onClick, showCompleteButton, onComplete, isCompleting }: TicketCardProps) => {
   const StatusIcon = statusConfig[status].icon;
+  const canComplete = showCompleteButton && status !== 'resolved' && onComplete;
+
+  const handleComplete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onComplete?.(id);
+  };
 
   return (
     <motion.div
@@ -66,13 +76,29 @@ const TicketCard = ({ id, title, description, status, priority, slaTime, assigne
           )}
           <span>{createdAt}</span>
         </div>
-        <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+        {!canComplete && (
+          <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+        )}
       </div>
 
       {assignee && (
         <div className="mt-3 pt-3 border-t border-border">
           <span className="text-xs text-muted-foreground">Assigned to: </span>
           <span className="text-xs font-medium text-foreground">{assignee}</span>
+        </div>
+      )}
+
+      {canComplete && (
+        <div className="mt-3 pt-3 border-t border-border">
+          <Button 
+            onClick={handleComplete}
+            disabled={isCompleting}
+            size="sm"
+            className="w-full bg-success hover:bg-success/80 text-white"
+          >
+            <CheckCheck className="w-4 h-4 mr-2" />
+            {isCompleting ? 'Completing...' : 'Mark as Complete'}
+          </Button>
         </div>
       )}
     </motion.div>

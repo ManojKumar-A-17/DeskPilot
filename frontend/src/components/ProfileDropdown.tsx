@@ -177,7 +177,7 @@ const ProfileDropdown = () => {
             className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           >
             <div className={`w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground relative overflow-hidden`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-orange-500 to-primary opacity-80"></div>
+              <div className="absolute inset-0 bg-primary opacity-90"></div>
               <span className="relative z-10">{getInitials()}</span>
             </div>
             <ChevronDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
@@ -188,7 +188,7 @@ const ProfileDropdown = () => {
           <DropdownMenuLabel className="p-3">
             <div className="flex items-start gap-3">
               <div className={`w-12 h-12 rounded-full gradient-primary flex items-center justify-center text-base font-bold text-primary-foreground relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-orange-500 to-primary opacity-80"></div>
+                <div className="absolute inset-0 bg-primary opacity-90"></div>
                 <span className="relative z-10">{getInitials()}</span>
               </div>
               <div className="flex-1 min-w-0">
@@ -233,7 +233,7 @@ const ProfileDropdown = () => {
             onClick={handleLogout}
             className="cursor-pointer rounded-lg hover:bg-secondary focus:bg-secondary transition-colors p-2.5 flex items-center gap-2"
           >
-            <LogOut className="w-4 h-4 text-orange-500" />
+            <LogOut className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium">Logout</span>
           </DropdownMenuItem>
 

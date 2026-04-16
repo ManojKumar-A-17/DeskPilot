@@ -93,33 +93,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen gradient-dark flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background effects */}
-      <motion.div 
-        className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
-        animate={{ 
-          scale: [1, 1.2, 1],
-          x: [0, 50, 0],
-        }}
-        transition={{ 
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div 
-        className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-accent/5 blur-3xl"
-        animate={{ 
-          scale: [1, 1.1, 1],
-          x: [0, -30, 0],
-        }}
-        transition={{ 
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      />
-
       {/* Back Button */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -156,7 +129,7 @@ const Login = () => {
               <BrandLogo size="lg" />
             </motion.div>
           </div>
-          <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-orange-400 to-primary bg-clip-text text-transparent">Welcome Back</h1>
+          <h1 className="text-2xl font-bold mb-2 text-primary">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to your helpdesk</p>
         </motion.div>
 

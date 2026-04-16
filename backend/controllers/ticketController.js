@@ -1,6 +1,32 @@
 import Ticket from '../models/Ticket.js';
 import User from '../models/User.js';
-import { sendEmail, getNewTicketEmailTemplate } from '../config/email.js';
+import {
+  sendEmail,
+  getNewTicketEmailTemplate,
+  getTicketAssignmentEmailTemplate
+} from '../config/email.js';
+import { automateTicket, classifyTicketText } from '../services/ticketAutomationService.js';
+
+const sendTicketEmail = (to, subject, html, logContext) => {
+  if (!to) return;
+
+  sendEmail(to, subject, html)
+    .then(emailResult => {
+      if (emailResult.disabled) {
+        console.log(`Email notifications disabled for ${logContext}`);
+      } else if (emailResult.success) {
+        console.log(`Email sent successfully for ${logContext}`);
+        if (emailResult.previewUrl) {
+          console.log(`Email preview: ${emailResult.previewUrl}`);
+        }
+      } else {
+        console.log(`Email failed for ${logContext}: ${emailResult.error}`);
+      }
+    })
+    .catch(err => {
+      console.error(`Email error for ${logContext}:`, err.message);
+    });
+};
 
 // @desc    Create new ticket
 // @route   POST /api/tickets
@@ -8,8 +34,8 @@ import { sendEmail, getNewTicketEmailTemplate } from '../config/email.js';
 export const createTicket = async (req, res) => {
   try {
     const { title, description, category, priority } = req.body;
+    const initialClassification = classifyTicketText({ title, description, category, priority });
 
-    // Generate ticket number
     const count = await Ticket.countDocuments();
     const ticketNumber = `TKT-${String(count + 1).padStart(6, '0')}`;
 
@@ -17,63 +43,58 @@ export const createTicket = async (req, res) => {
       ticketNumber,
       title,
       description,
-      category,
-      priority: priority || 'Medium',
+      category: category || initialClassification.category,
+      priority: priority || initialClassification.priority,
       createdBy: req.user._id
     });
 
+    const automation = await automateTicket(ticket);
+
     await ticket.populate([
       { path: 'createdBy', select: 'name email role' },
-      { path: 'assignedTo', select: 'name email role' }
+      { path: 'assignedTo', select: 'name email role' },
+      { path: 'aiSuggestions.suggestedTechnician', select: 'name email role' }
     ]);
 
-    // Send email notification asynchronously (don't wait for it)
-    // This prevents email issues from slowing down ticket creation
     if (process.env.NOTIFICATION_EMAIL) {
       const emailHtml = getNewTicketEmailTemplate(ticket, ticket.createdBy);
-      
-      // Fire and forget - don't await
-      sendEmail(
+
+      sendTicketEmail(
         process.env.NOTIFICATION_EMAIL,
         `New Ticket Created: ${ticket.ticketNumber} - ${ticket.title}`,
-        emailHtml
-      ).then(emailResult => {
-        if (emailResult.disabled) {
-          console.log(`📧 Email notifications disabled for ticket ${ticket.ticketNumber}`);
-        } else if (emailResult.success) {
-          console.log(`✅ Email sent successfully for ticket ${ticket.ticketNumber}`);
-          if (emailResult.previewUrl) {
-            console.log(`📧 Preview: ${emailResult.previewUrl}`);
-          }
-        } else {
-          console.log(`❌ Email failed for ticket ${ticket.ticketNumber}: ${emailResult.error}`);
-        }
-      }).catch(err => {
-        console.error(`❌ Email error for ticket ${ticket.ticketNumber}:`, err.message);
-      });
+        emailHtml,
+        `ticket ${ticket.ticketNumber}`
+      );
     }
 
-    // Trigger n8n webhook for auto-assignment (if enabled)
-    if (process.env.N8N_WEBHOOK_URL && process.env.N8N_AUTO_ASSIGN === 'true') {
-      fetch(process.env.N8N_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId: ticket._id })
-      }).then(response => {
-        if (response.ok) {
-          console.log(`🤖 n8n auto-assignment triggered for ticket ${ticket.ticketNumber}`);
-        } else {
-          console.log(`⚠️ n8n webhook returned status ${response.status}`);
-        }
-      }).catch(err => {
-        console.log(`⚠️ n8n webhook failed: ${err.message}`);
-      });
+    if (automation.assignedTechnician?.email) {
+      const assignmentHtml = getTicketAssignmentEmailTemplate(
+        ticket,
+        automation.assignedTechnician,
+        'DeskPilot Automation'
+      );
+
+      sendTicketEmail(
+        automation.assignedTechnician.email,
+        `Ticket Assigned: ${ticket.ticketNumber} - ${ticket.title}`,
+        assignmentHtml,
+        `assignment ${ticket.ticketNumber}`
+      );
     }
 
     res.status(201).json({
       success: true,
-      message: 'Ticket created successfully',
-      data: { ticket }
+      message: automation.assignedTechnician
+        ? 'Ticket created and auto-assigned successfully'
+        : 'Ticket created successfully',
+      data: {
+        ticket,
+        automation: {
+          classification: automation.classification,
+          assignedTechnician: automation.assignedTechnician,
+          activeTickets: automation.activeTickets
+        }
+      }
     });
   } catch (error) {
     console.error('Create ticket error:', error);
@@ -92,7 +113,6 @@ export const getTickets = async (req, res) => {
   try {
     let query = {};
 
-    // Filter based on user role
     if (req.user.role === 'employee') {
       query.createdBy = req.user._id;
     } else if (req.user.role === 'technician') {
@@ -101,9 +121,7 @@ export const getTickets = async (req, res) => {
         { assignedTo: null }
       ];
     }
-    // Admin can see all tickets
 
-    // Query parameters
     const { status, priority, category } = req.query;
     if (status) query.status = status;
     if (priority) query.priority = priority;
@@ -138,6 +156,7 @@ export const getTicket = async (req, res) => {
       .populate('createdBy', 'name email role department phoneNumber')
       .populate('assignedTo', 'name email role department phoneNumber')
       .populate('comments.user', 'name email role')
+      .populate('aiSuggestions.suggestedTechnician', 'name email role department')
       .populate('resolution.resolvedBy', 'name email role');
 
     if (!ticket) {
@@ -147,7 +166,6 @@ export const getTicket = async (req, res) => {
       });
     }
 
-    // Check authorization
     if (req.user.role === 'employee' && ticket.createdBy._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -174,7 +192,7 @@ export const getTicket = async (req, res) => {
 // @access  Private (Technician, Admin)
 export const updateTicket = async (req, res) => {
   try {
-    let ticket = await Ticket.findById(req.params.id);
+    const ticket = await Ticket.findById(req.params.id);
 
     if (!ticket) {
       return res.status(404).json({
@@ -183,10 +201,11 @@ export const updateTicket = async (req, res) => {
       });
     }
 
-    // Check authorization for technician
-    if (req.user.role === 'technician' && 
-        ticket.assignedTo && 
-        ticket.assignedTo.toString() !== req.user._id.toString()) {
+    if (
+      req.user.role === 'technician' &&
+      ticket.assignedTo &&
+      ticket.assignedTo.toString() !== req.user._id.toString()
+    ) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this ticket'
@@ -199,7 +218,6 @@ export const updateTicket = async (req, res) => {
     if (priority) ticket.priority = priority;
     if (assignedTo !== undefined) ticket.assignedTo = assignedTo;
 
-    // If status is Resolved, set resolution
     if (status === 'Resolved' && !ticket.resolution.resolvedAt) {
       ticket.resolution.resolvedBy = req.user._id;
       ticket.resolution.resolvedAt = new Date();
@@ -282,7 +300,6 @@ export const assignTicket = async (req, res) => {
       });
     }
 
-    // Verify technician exists
     if (technicianId) {
       const technician = await User.findById(technicianId);
       if (!technician || technician.role !== 'technician') {
@@ -304,9 +321,24 @@ export const assignTicket = async (req, res) => {
       { path: 'assignedTo', select: 'name email role' }
     ]);
 
+    if (technicianId && ticket.assignedTo?.email) {
+      const assignmentHtml = getTicketAssignmentEmailTemplate(
+        ticket,
+        ticket.assignedTo,
+        req.user.name || req.user.email || 'Admin'
+      );
+
+      sendTicketEmail(
+        ticket.assignedTo.email,
+        `Ticket Assigned: ${ticket.ticketNumber} - ${ticket.title}`,
+        assignmentHtml,
+        `assignment ${ticket.ticketNumber}`
+      );
+    }
+
     res.status(200).json({
       success: true,
-      message: 'Ticket assigned successfully',
+      message: technicianId ? 'Ticket assigned successfully' : 'Ticket unassigned successfully',
       data: { ticket }
     });
   } catch (error) {

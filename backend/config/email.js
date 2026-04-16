@@ -158,4 +158,70 @@ export const getNewTicketEmailTemplate = (ticket, creator) => {
   `;
 };
 
-export default { sendEmail, getNewTicketEmailTemplate };
+export const getTicketAssignmentEmailTemplate = (ticket, technician, assignedBy = 'DeskPilot Automation') => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
+        .ticket-info { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .ticket-row { padding: 8px 0; border-bottom: 1px solid #eee; }
+        .label { font-weight: bold; color: #2563EB; }
+        .priority { padding: 4px 12px; border-radius: 5px; display: inline-block; font-size: 12px; font-weight: bold; }
+        .priority-high { background: #ff4444; color: white; }
+        .priority-medium { background: #ffa500; color: white; }
+        .priority-low { background: #4CAF50; color: white; }
+        .priority-critical { background: #d32f2f; color: white; }
+        .footer { text-align: center; margin-top: 20px; color: #999; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">Ticket Assigned</h1>
+          <p style="margin: 5px 0 0 0;">DeskPilot AI HelpDesk</p>
+        </div>
+        <div class="content">
+          <p>Hello ${technician.name || technician.username || 'Technician'},</p>
+          <p>A support ticket has been assigned to you.</p>
+
+          <div class="ticket-info">
+            <div class="ticket-row">
+              <span class="label">Ticket Number:</span> ${ticket.ticketNumber}
+            </div>
+            <div class="ticket-row">
+              <span class="label">Title:</span> ${ticket.title}
+            </div>
+            <div class="ticket-row">
+              <span class="label">Priority:</span>
+              <span class="priority priority-${ticket.priority.toLowerCase()}">${ticket.priority}</span>
+            </div>
+            <div class="ticket-row">
+              <span class="label">Category:</span> ${ticket.category}
+            </div>
+            <div class="ticket-row">
+              <span class="label">Assigned By:</span> ${assignedBy}
+            </div>
+            <div class="ticket-row">
+              <span class="label">Description:</span><br/>
+              ${ticket.description}
+            </div>
+          </div>
+
+          <p>Please log in to DeskPilot to review and update this ticket.</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated message from DeskPilot AI HelpDesk</p>
+          <p>&copy; ${new Date().getFullYear()} DeskPilot. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+export default { sendEmail, getNewTicketEmailTemplate, getTicketAssignmentEmailTemplate };

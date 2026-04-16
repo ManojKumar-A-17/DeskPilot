@@ -241,7 +241,7 @@ const Profile = () => {
 
   return (
     <DashboardLayout title="My Profile">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="w-full max-w-6xl space-y-6">
         {/* Profile Header Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -255,7 +255,7 @@ const Profile = () => {
                 whileHover={{ scale: 1.05 }}
                 className="w-24 h-24 rounded-full gradient-primary flex items-center justify-center text-2xl font-bold text-primary-foreground relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-orange-500 to-primary opacity-80"></div>
+                <div className="absolute inset-0 bg-primary opacity-90"></div>
                 <span className="relative z-10">{getInitials()}</span>
               </motion.div>
             </div>

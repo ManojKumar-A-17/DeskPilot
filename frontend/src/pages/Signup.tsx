@@ -205,33 +205,6 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen gradient-dark flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background effects */}
-      <motion.div 
-        className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl"
-        animate={{ 
-          scale: [1, 1.3, 1],
-          y: [0, 50, 0],
-        }}
-        transition={{ 
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div 
-        className="absolute bottom-1/3 -left-32 w-80 h-80 rounded-full bg-accent/5 blur-3xl"
-        animate={{ 
-          scale: [1, 1.2, 1],
-          x: [0, 40, 0],
-        }}
-        transition={{ 
-          duration: 9,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 0.5
-        }}
-      />
-
       {/* Back Button */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -268,7 +241,7 @@ const Signup = () => {
               <BrandLogo size="lg" />
             </motion.div>
           </div>
-          <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-orange-400 to-primary bg-clip-text text-transparent">Join DeskPilot</h1>
+          <h1 className="text-2xl font-bold mb-2 text-primary">Join DeskPilot</h1>
           <p className="text-muted-foreground">Create your account to get started</p>
         </motion.div>
 

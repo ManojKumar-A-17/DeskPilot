@@ -227,7 +227,7 @@ const ChatBot = () => {
                       {msg.role === "user" && (
                         <div className="flex-shrink-0">
                           <div className="bg-secondary border border-border/50 rounded-full p-2">
-                            <div className="w-4 h-4 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-[10px] font-bold text-white">
+                            <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-primary-foreground">
                               U
                             </div>
                           </div>

@@ -84,10 +84,10 @@ const AdminDashboard = () => {
               <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(25, 12%, 50%)", fontSize: 12 }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "hsl(20, 12%, 11%)",
-                  border: "1px solid hsl(25, 12%, 18%)",
-                  borderRadius: "12px",
-                  color: "hsl(35, 25%, 88%)",
+                  backgroundColor: "hsl(var(--primary))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "8px",
+                  color: "hsl(var(--primary-foreground))",
                 }}
               />
               <Bar dataKey="tickets" fill="hsl(25, 95%, 53%)" radius={[6, 6, 0, 0]} />
@@ -109,10 +109,10 @@ const AdminDashboard = () => {
               <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(25, 12%, 50%)", fontSize: 12 }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "hsl(20, 12%, 11%)",
-                  border: "1px solid hsl(25, 12%, 18%)",
-                  borderRadius: "12px",
-                  color: "hsl(35, 25%, 88%)",
+                  backgroundColor: "hsl(var(--primary))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "8px",
+                  color: "hsl(var(--primary-foreground))",
                 }}
               />
               <Line type="monotone" dataKey="created" stroke="hsl(25, 95%, 53%)" strokeWidth={2} dot={false} />
@@ -140,10 +140,10 @@ const AdminDashboard = () => {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "hsl(20, 12%, 11%)",
-                  border: "1px solid hsl(25, 12%, 18%)",
-                  borderRadius: "12px",
-                  color: "hsl(35, 25%, 88%)",
+                  backgroundColor: "hsl(var(--primary))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "8px",
+                  color: "hsl(var(--primary-foreground))",
                 }}
               />
             </PieChart>

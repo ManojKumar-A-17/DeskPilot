@@ -9,13 +9,13 @@ const DashboardLayout = ({ children, title }: { children: ReactNode; title: stri
   const { role } = useAuth();
 
   return (
-    <div className="min-h-screen gradient-dark">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-40 glass-strong border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-primary/95 text-primary-foreground border-b border-primary-foreground/20">
+        <div className="w-full px-5 sm:px-8 lg:px-12 xl:px-16 py-3 flex items-center justify-between">
           <BrandLogo size="sm" />
           <div className="flex items-center gap-3">
-            <span className="text-xs font-medium text-muted-foreground capitalize px-3 py-1.5 rounded-full bg-secondary">
+            <span className="text-xs font-medium text-primary capitalize px-3 py-1.5 rounded-full bg-primary-foreground">
               {role}
             </span>
             <ProfileDropdown />
@@ -24,12 +24,12 @@ const DashboardLayout = ({ children, title }: { children: ReactNode; title: stri
       </header>
 
       {/* Page title */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-2">
-        <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">{title}</h1>
+      <div className="w-full px-5 sm:px-8 lg:px-12 xl:px-16 pt-6 pb-2">
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-primary">{title}</h1>
       </div>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-24 pt-2">{children}</main>
+      <main className="w-full px-5 sm:px-8 lg:px-12 xl:px-16 pb-24 pt-2">{children}</main>
 
       <Navigation />
       <ChatBot />

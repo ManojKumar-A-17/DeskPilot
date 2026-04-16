@@ -17,7 +17,7 @@ const categoryBreakdown = [
   { name: "Other", value: 5, color: "hsl(25, 12%, 50%)" },
 ];
 
-const tooltipStyle = { backgroundColor: "hsl(20, 12%, 11%)", border: "1px solid hsl(25, 12%, 18%)", borderRadius: "12px", color: "hsl(35, 25%, 88%)" };
+const tooltipStyle = { backgroundColor: "hsl(var(--primary))", border: "1px solid hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--primary-foreground))" };
 
 const Analytics = () => {
   return (

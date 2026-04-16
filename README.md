@@ -1,4 +1,4 @@
-# ThinkAuto - AI-Powered IT Helpdesk
+# DeskPilot - AI-Powered IT Helpdesk
 
 > Complete fullstack helpdesk solution with AI-powered ticket routing, role-based access control, and real-time collaboration.
 
@@ -16,8 +16,8 @@
 ## 📁 Project Structure
 
 ```
-AI_SMARTHELPDESK/
-├── thinkauto_frontend/    # React + TypeScript frontend
+DeskPilot/
+├── deskpilot_frontend/    # React + TypeScript frontend
 │   ├── src/
 │   │   ├── components/    # Reusable UI components
 │   │   ├── pages/         # Page components
@@ -25,7 +25,7 @@ AI_SMARTHELPDESK/
 │   │   ├── lib/           # Utilities (API service)
 │   │   └── hooks/         # Custom React hooks
 │   └── ...
-└── thinkauto_backend/     # Node.js + Express backend
+└── deskpilot_backend/     # Node.js + Express backend
     ├── config/            # Database configuration
     ├── models/            # Mongoose models
     ├── controllers/       # Business logic
@@ -63,13 +63,13 @@ AI_SMARTHELPDESK/
 ### 1. Clone the Repository
 
 ```bash
-cd D:\RANDOM_HACKTHON\AI_SMARTHELPDESK
+cd D:\RANDOM_HACKTHON\DeskPilot
 ```
 
 ### 2. Backend Setup
 
 ```bash
-cd thinkauto_backend
+cd deskpilot_backend
 
 # Install dependencies
 npm install
@@ -91,7 +91,7 @@ Backend will be running at: `http://localhost:5000`
 ### 3. Frontend Setup
 
 ```bash
-cd thinkauto_frontend
+cd deskpilot_frontend
 
 # Install dependencies (if not already done)
 npm install
@@ -216,8 +216,8 @@ Built with shadcn/ui components:
 ### Backend (.env)
 ```env
 PORT=5000
-MONGODB_URI=mongodb+srv://ThinkAuto:sudhan@123@cluster0.tkg5uwp.mongodb.net/thinkauto
-JWT_SECRET=thinkauto_jwt_secret_key_2026_very_secure
+MONGODB_URI=mongodb+srv://DeskPilot:sudhan@123@cluster0.tkg5uwp.mongodb.net/deskpilot
+JWT_SECRET=deskpilot_jwt_secret_key_2026_very_secure
 JWT_EXPIRE=7d
 NODE_ENV=development
 ADMIN_EMAIL=sudhanadmin@gmail.com
@@ -242,13 +242,13 @@ The application is fully functional and ready to test with:
 
 ### Backend
 ```bash
-cd thinkauto_backend
+cd deskpilot_backend
 npm start
 ```
 
 ### Frontend
 ```bash
-cd thinkauto_frontend
+cd deskpilot_frontend
 npm run build
 npm run preview
 ```
@@ -269,7 +269,7 @@ npm run preview
 
 ## 📄 License
 
-Copyright © 2026 ThinkAuto. All rights reserved.
+Copyright © 2026 DeskPilot. All rights reserved.
 
 ## 👨‍💻 Developer
 

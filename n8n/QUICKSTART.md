@@ -70,7 +70,7 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/ticket-created
 **Quick Setup:**
 ```bash
 # Install Groq SDK
-cd thinkauto_backend
+cd deskpilot_backend
 npm install groq-sdk
 
 # Create service file (see guide)

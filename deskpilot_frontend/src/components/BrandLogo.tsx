@@ -15,7 +15,7 @@ const BrandLogo = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
         </div>
       </div>
       <span className={`font-display font-bold ${sizes[size]} text-gradient`}>
-        ThinkAuto
+        DeskPilot
       </span>
     </div>
   );

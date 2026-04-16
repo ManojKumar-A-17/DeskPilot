@@ -1,8 +1,8 @@
-# ThinkAuto - AI-Powered IT Helpdesk
+# DeskPilot - AI-Powered IT Helpdesk
 
 ## Project Overview
 
-ThinkAuto uses AI to automate ticket routing, predict issues, and accelerate resolution — so your team can focus on what matters.
+DeskPilot uses AI to automate ticket routing, predict issues, and accelerate resolution — so your team can focus on what matters.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ Follow these steps to set up the project locally:
 git clone <YOUR_GIT_URL>
 
 # Step 2: Navigate to the project directory
-cd thinkauto_frontend
+cd deskpilot_frontend
 
 # Step 3: Install dependencies
 npm i
@@ -64,7 +64,7 @@ This project is built with:
 ## Project Structure
 
 ```
-thinkauto_frontend/
+deskpilot_frontend/
 ├── src/
 │   ├── components/     # Reusable UI components
 │   ├── pages/          # Page components
@@ -78,5 +78,5 @@ thinkauto_frontend/
 
 ## License
 
-Copyright © 2026 ThinkAuto. All rights reserved.
+Copyright © 2026 DeskPilot. All rights reserved.
 

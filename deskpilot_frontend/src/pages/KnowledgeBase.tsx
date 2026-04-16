@@ -26,7 +26,7 @@ const KnowledgeBase = () => {
         </div>
         <div>
           <p className="text-sm font-medium text-foreground">AI-Powered Search</p>
-          <p className="text-xs text-muted-foreground">ThinkAuto AI finds the most relevant articles for your query.</p>
+          <p className="text-xs text-muted-foreground">DeskPilot AI finds the most relevant articles for your query.</p>
         </div>
       </div>
 

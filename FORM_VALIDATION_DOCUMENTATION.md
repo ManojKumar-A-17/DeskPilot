@@ -1,14 +1,14 @@
-# 📋 ThinkAuto Form Validation Documentation
+# 📋 DeskPilot Form Validation Documentation
 
 ## Overview
-This document details all form validation rules, error handling, and user feedback mechanisms implemented in the ThinkAuto helpdesk application.
+This document details all form validation rules, error handling, and user feedback mechanisms implemented in the DeskPilot helpdesk application.
 
 ---
 
 ## 🔐 Signup Form Validation
 
 ### Location
-**File:** `thinkauto_frontend/src/pages/Signup.tsx`
+**File:** `deskpilot_frontend/src/pages/Signup.tsx`
 
 ---
 
@@ -82,7 +82,7 @@ This document details all form validation rules, error handling, and user feedba
 ### Example Valid Emails
 - `user@company.com`
 - `john.doe@example.org`
-- `support@thinkauto.ai`
+- `support@deskpilot.ai`
 
 ### Example Invalid Emails
 - `notanemail` (missing @ and domain)
@@ -340,7 +340,7 @@ Each field shows specific errors:
 ```javascript
 Toast Notification:
 Title: "Account created successfully"
-Description: "Welcome to ThinkAuto, {username}!"
+Description: "Welcome to DeskPilot, {username}!"
 Variant: Success (green)
 ```
 
@@ -495,7 +495,7 @@ Primary:         #f97316 (orange-500)
 
 For questions or issues with form validation:
 - **Documentation:** This file
-- **Source Code:** `thinkauto_frontend/src/pages/Signup.tsx`
+- **Source Code:** `deskpilot_frontend/src/pages/Signup.tsx`
 - **Related Files:** 
   - `Login.tsx` - Login form
   - `AuthContext.tsx` - Authentication state
@@ -505,4 +505,4 @@ For questions or issues with form validation:
 
 **Last Updated:** February 20, 2026  
 **Version:** 1.0.0  
-**Author:** ThinkAuto Development Team
+**Author:** DeskPilot Development Team

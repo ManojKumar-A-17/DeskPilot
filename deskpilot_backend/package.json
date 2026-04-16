@@ -1,7 +1,7 @@
 {
-  "name": "thinkauto_backend",
+  "name": "deskpilot_backend",
   "version": "1.0.0",
-  "description": "ThinkAuto AI-Powered IT Helpdesk Backend",
+  "description": "DeskPilot AI-Powered IT Helpdesk Backend",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "express",
     "mongodb"
   ],
-  "author": "ThinkAuto",
+  "author": "DeskPilot",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -182,7 +182,7 @@ const Signup = () => {
 
         toast({
           title: "Account created successfully",
-          description: `Welcome to ThinkAuto, ${ userData.name}!`,
+          description: `Welcome to DeskPilot, ${ userData.name}!`,
         });
       }
     } catch (error: any) {
@@ -268,7 +268,7 @@ const Signup = () => {
               <BrandLogo size="lg" />
             </motion.div>
           </div>
-          <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-orange-400 to-primary bg-clip-text text-transparent">Join ThinkAuto</h1>
+          <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-orange-400 to-primary bg-clip-text text-transparent">Join DeskPilot</h1>
           <p className="text-muted-foreground">Create your account to get started</p>
         </motion.div>
 

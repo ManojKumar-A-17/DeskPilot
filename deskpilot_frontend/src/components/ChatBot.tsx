@@ -16,7 +16,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: "bot", 
-      text: "Hi! I'm ThinkAuto AI, your intelligent IT helpdesk assistant. I can help you with:\n\n• Technical troubleshooting\n• Software issues\n• Hardware problems\n• Network connectivity\n• Access requests\n• General IT queries\n\nHow can I assist you today?",
+      text: "Hi! I'm DeskPilot AI, your intelligent IT helpdesk assistant. I can help you with:\n\n• Technical troubleshooting\n• Software issues\n• Hardware problems\n• Network connectivity\n• Access requests\n• General IT queries\n\nHow can I assist you today?",
       timestamp: new Date()
     },
   ]);
@@ -92,7 +92,7 @@ const ChatBot = () => {
     setMessages([
       { 
         role: "bot", 
-        text: "Hi! I'm ThinkAuto AI, your intelligent IT helpdesk assistant. How can I assist you today?",
+        text: "Hi! I'm DeskPilot AI, your intelligent IT helpdesk assistant. How can I assist you today?",
         timestamp: new Date()
       },
     ]);
@@ -155,7 +155,7 @@ const ChatBot = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-display font-bold text-primary-foreground text-lg">ThinkAuto AI</span>
+                    <span className="font-display font-bold text-primary-foreground text-lg">DeskPilot AI</span>
                     <Sparkles className="w-4 h-4 text-yellow-300 animate-pulse" />
                   </div>
                   <p className="text-xs text-primary-foreground/80">Online • Always here to help</p>

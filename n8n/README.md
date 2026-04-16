@@ -49,13 +49,13 @@ Access n8n at: **http://localhost:5678**
 
 ### Step 1: Create Credentials
 
-#### A. **ThinkAuto API Token** (HTTP Header Auth)
+#### A. **DeskPilot API Token** (HTTP Header Auth)
 1. Click **"Credentials"** → **"New"**
 2. Type: **HTTP Header Auth**
-3. Name: **ThinkAuto API Token**
+3. Name: **DeskPilot API Token**
 4. Header Name: `Authorization`
 5. Header Value: `Bearer YOUR_JWT_TOKEN_HERE`
-   - Get token from: Login to ThinkAuto → Check localStorage
+   - Get token from: Login to DeskPilot → Check localStorage
    - Or use admin token from backend
 
 #### B. **Groq API** Credential
@@ -81,9 +81,9 @@ Access n8n at: **http://localhost:5678**
 
 After importing, assign credentials to nodes:
 
-1. **Fetch Ticket Details** → Assign "ThinkAuto API Token"
-2. **Fetch Available Technicians** → Assign "ThinkAuto API Token"
-3. **Assign Technician to Ticket** → Assign "ThinkAuto API Token"
+1. **Fetch Ticket Details** → Assign "DeskPilot API Token"
+2. **Fetch Available Technicians** → Assign "DeskPilot API Token"
+3. **Assign Technician to Ticket** → Assign "DeskPilot API Token"
 4. **Groq - Select Best Technician** → Assign "Groq API"
 5. **Send Email to User** → Assign "Gmail OAuth"
 6. **Send Email to Technician** → Assign "Gmail OAuth"
@@ -148,7 +148,7 @@ curl -X POST http://localhost:5678/webhook-test/ticket-created \
 
 ### Test from Frontend:
 
-1. Login to ThinkAuto
+1. Login to DeskPilot
 2. Create a new ticket
 3. Check n8n executions tab - should show successful run
 4. Check emails - both user and technician should receive notifications

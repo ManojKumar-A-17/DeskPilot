@@ -70,7 +70,7 @@ const CreateTicket = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">AI Auto-Routing</p>
-            <p className="text-xs text-muted-foreground">ThinkAuto AI will analyze your ticket and route it to the best technician.</p>
+            <p className="text-xs text-muted-foreground">DeskPilot AI will analyze your ticket and route it to the best technician.</p>
           </div>
         </div>
 

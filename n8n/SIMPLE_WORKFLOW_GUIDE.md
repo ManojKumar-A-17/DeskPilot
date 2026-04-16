@@ -1,4 +1,4 @@
-# 🎯 ThinkAuto - Simple Auto-Assignment Workflow (RECOMMENDED)
+# 🎯 DeskPilot - Simple Auto-Assignment Workflow (RECOMMENDED)
 
 ## ✨ Features
 
@@ -71,7 +71,7 @@ Opens at: **http://localhost:5678**
 3. Name: `Gmail` (or any name)
 4. **Get OAuth Credentials**:
    - Go to: https://console.cloud.google.com/
-   - Create new project: "ThinkAuto N8N"
+   - Create new project: "DeskPilot N8N"
    - Enable **Gmail API**
    - Create **OAuth 2.0 Client ID** (Desktop app)
    - Copy **Client ID** and **Client Secret**
@@ -87,7 +87,7 @@ Opens at: **http://localhost:5678**
 
 1. In N8N, click **"Credentials"** → **"New"**
 2. Search: **HTTP Header Auth**
-3. Name: `ThinkAuto API`
+3. Name: `DeskPilot API`
 4. Configuration:
    - **Header Name**: `Authorization`
    - **Header Value**: `Bearer <YOUR_JWT_TOKEN>`
@@ -99,7 +99,7 @@ Option A - Use Admin Account:
 # Login as admin
 POST http://localhost:5000/api/auth/login
 {
-  "email": "admin@thinkauto.com",
+  "email": "admin@deskpilot.com",
   "password": "admin123"
 }
 
@@ -108,7 +108,7 @@ POST http://localhost:5000/api/auth/login
 
 Option B - From Browser:
 ```javascript
-// Login to ThinkAuto frontend
+// Login to DeskPilot frontend
 // Open DevTools → Console → Run:
 localStorage.getItem('token')
 // Copy the token
@@ -127,7 +127,7 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/ticket-created
 THINKAUTO_JWT_TOKEN=<PASTE_YOUR_JWT_TOKEN_HERE>
 ```
 
-This token is used by N8N to call your ThinkAuto API endpoints.
+This token is used by N8N to call your DeskPilot API endpoints.
 
 ### 4. Update Workflow Nodes (Optional)
 
@@ -166,13 +166,13 @@ N8N_WEBHOOK_URL=http://localhost:5678/webhook/ticket-created
 
 Restart backend:
 ```bash
-cd thinkauto_backend
+cd deskpilot_backend
 npm start
 ```
 
 ### 3. Create a Test Ticket
 
-1. Open ThinkAuto frontend
+1. Open DeskPilot frontend
 2. Login as employee
 3. Go to **Create Ticket**
 4. Fill in:
@@ -189,7 +189,7 @@ npm start
 - Should show successful execution
 - Check each node's output data
 
-**In ThinkAuto:**
+**In DeskPilot:**
 - Ticket should be created
 - Technician should be auto-assigned
 - Check ticket details page
@@ -282,8 +282,8 @@ curl -X POST http://localhost:5678/webhook/ticket-created \
 **Issue**: JWT token expired or incorrect
 
 **Fix:**
-1. Get new token (login to ThinkAuto)
-2. Update credential: **ThinkAuto API**
+1. Get new token (login to DeskPilot)
+2. Update credential: **DeskPilot API**
 3. Update `.env`: `THINKAUTO_JWT_TOKEN=<new_token>`
 4. Restart backend
 
@@ -302,7 +302,7 @@ curl -X POST http://localhost:5678/webhook/ticket-created \
 ```bash
 # Make sure you have users with role "technician"
 # Run seed script if needed:
-cd thinkauto_backend
+cd deskpilot_backend
 node scripts/seedAdmin.js
 ```
 
@@ -458,4 +458,4 @@ If you have issues:
 
 ---
 
-Made with ❤️ for ThinkAuto HelpDesk
+Made with ❤️ for DeskPilot HelpDesk

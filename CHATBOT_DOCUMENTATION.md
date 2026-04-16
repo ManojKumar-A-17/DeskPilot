@@ -1,12 +1,12 @@
-# AI Chatbot & Consultation Logs - ThinkAuto IT Helpdesk
+# AI Chatbot & Consultation Logs - DeskPilot IT Helpdesk
 
 ## Overview
-The AI-powered chatbot and consultation logs system provides intelligent IT support and conversation tracking for the ThinkAuto helpdesk platform.
+The AI-powered chatbot and consultation logs system provides intelligent IT support and conversation tracking for the DeskPilot helpdesk platform.
 
 ## Features
 
 ### 🤖 AI Chatbot (ChatBot.tsx)
-**Location**: `thinkauto_frontend/src/components/ChatBot.tsx`
+**Location**: `deskpilot_frontend/src/components/ChatBot.tsx`
 
 #### Key Features:
 - **Groq API Integration**: Uses Mixtral-8x7b-32768 model for intelligent responses
@@ -35,13 +35,13 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 ```
 
 **Environment Setup:**
-Create a `.env` file in `thinkauto_frontend/` directory:
+Create a `.env` file in `deskpilot_frontend/` directory:
 ```env
 VITE_GROQ_API_KEY=your_groq_api_key_here
 ```
 
 #### System Prompt:
-The chatbot is configured as "ThinkAuto AI", a helpful IT helpdesk assistant that:
+The chatbot is configured as "DeskPilot AI", a helpful IT helpdesk assistant that:
 - Helps with technical issues
 - Troubleshoots software problems
 - Assists with hardware issues
@@ -57,7 +57,7 @@ The chatbot is configured as "ThinkAuto AI", a helpful IT helpdesk assistant tha
 5. **Header Controls**: Minimize, clear chat, and close buttons
 
 ### 📊 Consultation Logs (ConsultationLogs.tsx)
-**Location**: `thinkauto_frontend/src/pages/ConsultationLogs.tsx`
+**Location**: `deskpilot_frontend/src/pages/ConsultationLogs.tsx`
 
 #### Key Features:
 - **Comprehensive Dashboard**: View all AI chatbot interactions
@@ -254,4 +254,4 @@ For technical support or questions:
 
 **Last Updated**: December 2024  
 **Version**: 1.0.0  
-**Contributors**: ThinkAuto Development Team
+**Contributors**: DeskPilot Development Team

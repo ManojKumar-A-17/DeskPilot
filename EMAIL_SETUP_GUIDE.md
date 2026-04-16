@@ -1,7 +1,7 @@
 # Email Notification Setup Guide
 
 ## Overview
-The ThinkAuto HelpDesk system now sends automatic email notifications when new tickets are created.
+The DeskPilot HelpDesk system now sends automatic email notifications when new tickets are created.
 
 ## Features
 ✅ Automatic email on ticket creation  
@@ -22,13 +22,13 @@ If you're using Gmail, you need to create an App Password:
 5. Search for **App passwords**
 6. Click on **App passwords**
 7. Select app: **Mail**
-8. Select device: **Other (Custom name)** → Type "ThinkAuto HelpDesk"
+8. Select device: **Other (Custom name)** → Type "DeskPilot HelpDesk"
 9. Click **Generate**
 10. Copy the 16-character password (remove spaces)
 
 ### 2. Update .env File
 
-Open `thinkauto_backend/.env` and update these values:
+Open `deskpilot_backend/.env` and update these values:
 
 ```env
 # Email Configuration (Gmail)
@@ -82,7 +82,7 @@ const transporter = nodemailer.createTransport({
 After updating .env, restart your backend server:
 
 ```bash
-cd thinkauto_backend
+cd deskpilot_backend
 npm run dev
 ```
 

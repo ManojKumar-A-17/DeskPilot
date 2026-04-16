@@ -27,7 +27,7 @@ const AssignTicket = () => {
         </div>
         <div>
           <p className="text-sm font-medium text-foreground">AI Auto-Assignment</p>
-          <p className="text-xs text-muted-foreground">ThinkAuto AI recommends the best technician based on expertise and workload.</p>
+          <p className="text-xs text-muted-foreground">DeskPilot AI recommends the best technician based on expertise and workload.</p>
         </div>
       </div>
 

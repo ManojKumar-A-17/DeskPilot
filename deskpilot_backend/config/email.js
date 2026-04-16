@@ -60,7 +60,7 @@ export const sendEmail = async (to, subject, html) => {
     const transporter = await createTransporter();
     
     const mailOptions = {
-      from: `ThinkAuto HelpDesk <${process.env.EMAIL_USER || 'noreply@thinkauto.com'}>`,
+      from: `DeskPilot HelpDesk <${process.env.EMAIL_USER || 'noreply@deskpilot.com'}>`,
       to: to,
       subject: subject,
       html: html
@@ -111,7 +111,7 @@ export const getNewTicketEmailTemplate = (ticket, creator) => {
       <div class="container">
         <div class="header">
           <h1 style="margin: 0;">🎫 New Ticket Created</h1>
-          <p style="margin: 5px 0 0 0;">ThinkAuto AI HelpDesk</p>
+          <p style="margin: 5px 0 0 0;">DeskPilot AI HelpDesk</p>
         </div>
         <div class="content">
           <p>Hello,</p>
@@ -140,7 +140,7 @@ export const getNewTicketEmailTemplate = (ticket, creator) => {
             </div>
           </div>
           
-          <p>Please log in to the ThinkAuto HelpDesk to view and manage this ticket.</p>
+          <p>Please log in to the DeskPilot HelpDesk to view and manage this ticket.</p>
           
           <div style="text-align: center; margin: 20px 0;">
             <a href="http://localhost:8081" style="background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
@@ -149,8 +149,8 @@ export const getNewTicketEmailTemplate = (ticket, creator) => {
           </div>
         </div>
         <div class="footer">
-          <p>This is an automated message from ThinkAuto AI HelpDesk</p>
-          <p>© ${new Date().getFullYear()} ThinkAuto. All rights reserved.</p>
+          <p>This is an automated message from DeskPilot AI HelpDesk</p>
+          <p>© ${new Date().getFullYear()} DeskPilot. All rights reserved.</p>
         </div>
       </div>
     </body>

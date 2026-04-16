@@ -57,7 +57,7 @@ const Index = () => {
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            ThinkAuto uses AI to automate ticket routing, predict issues, and accelerate resolution — so your team can focus on what matters.
+            DeskPilot uses AI to automate ticket routing, predict issues, and accelerate resolution — so your team can focus on what matters.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

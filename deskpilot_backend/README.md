@@ -1,4 +1,4 @@
-# ThinkAuto Backend API
+# DeskPilot Backend API
 
 AI-Powered IT Helpdesk Backend built with Node.js, Express, and MongoDB.
 
@@ -21,7 +21,7 @@ AI-Powered IT Helpdesk Backend built with Node.js, Express, and MongoDB.
 
 1. **Navigate to backend directory:**
    ```bash
-   cd thinkauto_backend
+   cd deskpilot_backend
    ```
 
 2. **Install dependencies:**
@@ -102,7 +102,7 @@ AI-Powered IT Helpdesk Backend built with Node.js, Express, and MongoDB.
 ## Project Structure
 
 ```
-thinkauto_backend/
+deskpilot_backend/
 ├── config/
 │   └── database.js          # MongoDB connection
 ├── controllers/
@@ -204,4 +204,4 @@ npm run seed
 
 ## License
 
-Copyright © 2026 ThinkAuto. All rights reserved.
+Copyright © 2026 DeskPilot. All rights reserved.

@@ -1,5 +1,5 @@
 {
-  "name": "ThinkAuto - Auto Assign Technician & Send Emails",
+  "name": "DeskPilot - Auto Assign Technician & Send Emails",
   "nodes": [
     {
       "parameters": {
@@ -30,7 +30,7 @@
       "credentials": {
         "httpHeaderAuth": {
           "id": "1",
-          "name": "ThinkAuto API Token"
+          "name": "DeskPilot API Token"
         }
       }
     },
@@ -49,7 +49,7 @@
       "credentials": {
         "httpHeaderAuth": {
           "id": "1",
-          "name": "ThinkAuto API Token"
+          "name": "DeskPilot API Token"
         }
       }
     },
@@ -117,7 +117,7 @@
       "credentials": {
         "httpHeaderAuth": {
           "id": "1",
-          "name": "ThinkAuto API Token"
+          "name": "DeskPilot API Token"
         }
       }
     },
@@ -126,7 +126,7 @@
         "sendTo": "={{ $json.userEmail }}",
         "subject": "=Ticket {{ $json.ticketNumber }} - Assigned to Technician",
         "emailType": "html",
-        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }\n    .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }\n    .info-box { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #FF6B35; }\n    .button { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1 style=\"margin: 0;\">🎫 Technician Assigned</h1>\n      <p style=\"margin: 5px 0 0 0;\">ThinkAuto AI HelpDesk</p>\n    </div>\n    <div class=\"content\">\n      <p>Hello <strong>{{ $json.userName }}</strong>,</p>\n      <p>Great news! Your support ticket has been assigned to a technician.</p>\n      \n      <div class=\"info-box\">\n        <p><strong>Ticket Number:</strong> {{ $json.ticketNumber }}</p>\n        <p><strong>Title:</strong> {{ $json.ticketTitle }}</p>\n        <p><strong>Priority:</strong> {{ $json.ticketPriority }}</p>\n        <p><strong>Assigned Technician:</strong> {{ $json.technicianName }}</p>\n        <p><strong>Reason:</strong> {{ $json.assignmentReason }}</p>\n      </div>\n      \n      <p>Your technician will review your ticket and get back to you shortly.</p>\n      \n      <a href=\"http://localhost:8081/employee/tickets/{{ $json.ticketId }}\" class=\"button\">View Ticket Status</a>\n      \n      <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">\n        This is an automated message from ThinkAuto AI HelpDesk. Please do not reply to this email.\n      </p>\n    </div>\n  </div>\n</body>\n</html>",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }\n    .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }\n    .info-box { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #FF6B35; }\n    .button { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1 style=\"margin: 0;\">🎫 Technician Assigned</h1>\n      <p style=\"margin: 5px 0 0 0;\">DeskPilot AI HelpDesk</p>\n    </div>\n    <div class=\"content\">\n      <p>Hello <strong>{{ $json.userName }}</strong>,</p>\n      <p>Great news! Your support ticket has been assigned to a technician.</p>\n      \n      <div class=\"info-box\">\n        <p><strong>Ticket Number:</strong> {{ $json.ticketNumber }}</p>\n        <p><strong>Title:</strong> {{ $json.ticketTitle }}</p>\n        <p><strong>Priority:</strong> {{ $json.ticketPriority }}</p>\n        <p><strong>Assigned Technician:</strong> {{ $json.technicianName }}</p>\n        <p><strong>Reason:</strong> {{ $json.assignmentReason }}</p>\n      </div>\n      \n      <p>Your technician will review your ticket and get back to you shortly.</p>\n      \n      <a href=\"http://localhost:8081/employee/tickets/{{ $json.ticketId }}\" class=\"button\">View Ticket Status</a>\n      \n      <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">\n        This is an automated message from DeskPilot AI HelpDesk. Please do not reply to this email.\n      </p>\n    </div>\n  </div>\n</body>\n</html>",
         "options": {}
       },
       "id": "send-email-user",
@@ -146,7 +146,7 @@
         "sendTo": "={{ $json.technicianEmail }}",
         "subject": "=New Ticket Assigned: {{ $json.ticketNumber }}",
         "emailType": "html",
-        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }\n    .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }\n    .ticket-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }\n    .priority-high { color: #d32f2f; font-weight: bold; }\n    .priority-medium { color: #f57c00; font-weight: bold; }\n    .priority-low { color: #388e3c; font-weight: bold; }\n    .button { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1 style=\"margin: 0;\">🔧 New Ticket Assigned to You</h1>\n      <p style=\"margin: 5px 0 0 0;\">ThinkAuto AI HelpDesk</p>\n    </div>\n    <div class=\"content\">\n      <p>Hello <strong>{{ $json.technicianName }}</strong>,</p>\n      <p>A new support ticket has been assigned to you by our AI assignment system.</p>\n      \n      <div class=\"ticket-details\">\n        <h3 style=\"margin-top: 0; color: #FF6B35;\">Ticket Details</h3>\n        <p><strong>Ticket Number:</strong> {{ $json.ticketNumber }}</p>\n        <p><strong>Title:</strong> {{ $json.ticketTitle }}</p>\n        <p><strong>Description:</strong><br/>{{ $json.ticketDescription }}</p>\n        <p><strong>Category:</strong> {{ $json.ticketCategory }}</p>\n        <p><strong>Priority:</strong> <span class=\"priority-{{ $json.ticketPriority.toLowerCase() }}\">{{ $json.ticketPriority }}</span></p>\n        <p><strong>Reported By:</strong> {{ $json.userName }} ({{ $json.userEmail }})</p>\n        <p><strong>Assignment Reason:</strong> {{ $json.assignmentReason }}</p>\n      </div>\n      \n      <p>Please review the ticket and begin working on it as soon as possible.</p>\n      \n      <a href=\"http://localhost:8081/technician/tickets/{{ $json.ticketId }}\" class=\"button\">View Ticket</a>\n      \n      <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">\n        This is an automated message from ThinkAuto AI HelpDesk.\n      </p>\n    </div>\n  </div>\n</body>\n</html>",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }\n    .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }\n    .ticket-details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }\n    .priority-high { color: #d32f2f; font-weight: bold; }\n    .priority-medium { color: #f57c00; font-weight: bold; }\n    .priority-low { color: #388e3c; font-weight: bold; }\n    .button { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1 style=\"margin: 0;\">🔧 New Ticket Assigned to You</h1>\n      <p style=\"margin: 5px 0 0 0;\">DeskPilot AI HelpDesk</p>\n    </div>\n    <div class=\"content\">\n      <p>Hello <strong>{{ $json.technicianName }}</strong>,</p>\n      <p>A new support ticket has been assigned to you by our AI assignment system.</p>\n      \n      <div class=\"ticket-details\">\n        <h3 style=\"margin-top: 0; color: #FF6B35;\">Ticket Details</h3>\n        <p><strong>Ticket Number:</strong> {{ $json.ticketNumber }}</p>\n        <p><strong>Title:</strong> {{ $json.ticketTitle }}</p>\n        <p><strong>Description:</strong><br/>{{ $json.ticketDescription }}</p>\n        <p><strong>Category:</strong> {{ $json.ticketCategory }}</p>\n        <p><strong>Priority:</strong> <span class=\"priority-{{ $json.ticketPriority.toLowerCase() }}\">{{ $json.ticketPriority }}</span></p>\n        <p><strong>Reported By:</strong> {{ $json.userName }} ({{ $json.userEmail }})</p>\n        <p><strong>Assignment Reason:</strong> {{ $json.assignmentReason }}</p>\n      </div>\n      \n      <p>Please review the ticket and begin working on it as soon as possible.</p>\n      \n      <a href=\"http://localhost:8081/technician/tickets/{{ $json.ticketId }}\" class=\"button\">View Ticket</a>\n      \n      <p style=\"color: #666; font-size: 14px; margin-top: 30px;\">\n        This is an automated message from DeskPilot AI HelpDesk.\n      </p>\n    </div>\n  </div>\n</body>\n</html>",
         "options": {}
       },
       "id": "send-email-technician",

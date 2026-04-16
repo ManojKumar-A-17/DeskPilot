@@ -25,7 +25,7 @@ export const sendMessage = async (req, res) => {
     const messages = [
       {
         role: 'system',
-        content: `You are ThinkAuto AI, a helpful and intelligent IT helpdesk assistant for ThinkAuto company. You help employees with technical issues, software problems, hardware troubleshooting, network connectivity, access requests, and general IT queries. 
+        content: `You are DeskPilot AI, a helpful and intelligent IT helpdesk assistant for DeskPilot company. You help employees with technical issues, software problems, hardware troubleshooting, network connectivity, access requests, and general IT queries. 
         
         Be concise, professional, and helpful. If you can't solve an issue directly, suggest creating a support ticket through the helpdesk system.
         
@@ -123,7 +123,7 @@ export const getChatbotStatus = async (req, res) => {
       success: true,
       data: {
         status: hasGroqApiKey ? 'online' : 'offline',
-        message: hasGroqApiKey ? 'ThinkAuto AI is ready to help!' : 'Groq API key not configured'
+        message: hasGroqApiKey ? 'DeskPilot AI is ready to help!' : 'Groq API key not configured'
       }
     });
   } catch (error) {

@@ -6,7 +6,7 @@ If you prefer not to use n8n, here's how to implement auto-assignment directly i
 
 ### 1. Create Auto-Assignment Service
 
-Create file: `thinkauto_backend/services/autoAssign.js`
+Create file: `deskpilot_backend/services/autoAssign.js`
 
 ```javascript
 import Groq from 'groq-sdk';
@@ -188,7 +188,7 @@ Do not include any other text, just the JSON.`;
 ### 2. Install Groq SDK
 
 ```bash
-cd thinkauto_backend
+cd deskpilot_backend
 npm install groq-sdk
 ```
 

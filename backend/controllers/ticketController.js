@@ -1,5 +1,7 @@
 import Ticket from '../models/Ticket.js';
 import User from '../models/User.js';
+import Counter from '../models/Counter.js';
+import mongoose from 'mongoose';
 import {
   sendEmail,
   getNewTicketEmailTemplate,
@@ -28,6 +30,66 @@ const sendTicketEmail = (to, subject, html, logContext) => {
     });
 };
 
+const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
+
+const sendControllerError = (res, error, fallbackMessage) => {
+  const statusCode = error.name === 'ValidationError' ? 400 : 500;
+
+  return res.status(statusCode).json({
+    success: false,
+    message: statusCode === 400 ? error.message : fallbackMessage,
+    error: error.message
+  });
+};
+
+const canAccessTicket = (user, ticket) => {
+  if (user.role === 'admin') return true;
+
+  if (user.role === 'employee') {
+    const createdBy = ticket.createdBy?._id || ticket.createdBy;
+    return createdBy?.toString() === user._id.toString();
+  }
+
+  if (user.role === 'technician') {
+    return !ticket.assignedTo || ticket.assignedTo.toString() === user._id.toString();
+  }
+
+  return false;
+};
+
+const getLastTicketSequence = async () => {
+  const lastTicket = await Ticket.findOne({ ticketNumber: /^TKT-\d+$/ })
+    .sort({ ticketNumber: -1 })
+    .select('ticketNumber');
+
+  if (!lastTicket?.ticketNumber) return 0;
+
+  return Number.parseInt(lastTicket.ticketNumber.replace('TKT-', ''), 10) || 0;
+};
+
+const getNextTicketNumber = async () => {
+  const counterId = 'ticketNumber';
+  const existingCounter = await Counter.findById(counterId);
+
+  if (!existingCounter) {
+    const lastSequence = await getLastTicketSequence();
+
+    try {
+      await Counter.create({ _id: counterId, seq: lastSequence });
+    } catch (error) {
+      if (error.code !== 11000) throw error;
+    }
+  }
+
+  const counter = await Counter.findByIdAndUpdate(
+    counterId,
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+
+  return `TKT-${String(counter.seq).padStart(6, '0')}`;
+};
+
 // @desc    Create new ticket
 // @route   POST /api/tickets
 // @access  Private (Employee, Technician, Admin)
@@ -36,8 +98,7 @@ export const createTicket = async (req, res) => {
     const { title, description, category, priority } = req.body;
     const initialClassification = classifyTicketText({ title, description, category, priority });
 
-    const count = await Ticket.countDocuments();
-    const ticketNumber = `TKT-${String(count + 1).padStart(6, '0')}`;
+    const ticketNumber = await getNextTicketNumber();
 
     const ticket = await Ticket.create({
       ticketNumber,
@@ -98,11 +159,7 @@ export const createTicket = async (req, res) => {
     });
   } catch (error) {
     console.error('Create ticket error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error creating ticket',
-      error: error.message
-    });
+    return sendControllerError(res, error, 'Error creating ticket');
   }
 };
 
@@ -152,6 +209,13 @@ export const getTickets = async (req, res) => {
 // @access  Private
 export const getTicket = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ticket ID'
+      });
+    }
+
     const ticket = await Ticket.findById(req.params.id)
       .populate('createdBy', 'name email role department phoneNumber')
       .populate('assignedTo', 'name email role department phoneNumber')
@@ -166,7 +230,7 @@ export const getTicket = async (req, res) => {
       });
     }
 
-    if (req.user.role === 'employee' && ticket.createdBy._id.toString() !== req.user._id.toString()) {
+    if (!canAccessTicket(req.user, ticket)) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to view this ticket'
@@ -179,11 +243,7 @@ export const getTicket = async (req, res) => {
     });
   } catch (error) {
     console.error('Get ticket error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching ticket',
-      error: error.message
-    });
+    return sendControllerError(res, error, 'Error fetching ticket');
   }
 };
 
@@ -192,6 +252,13 @@ export const getTicket = async (req, res) => {
 // @access  Private (Technician, Admin)
 export const updateTicket = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ticket ID'
+      });
+    }
+
     const ticket = await Ticket.findById(req.params.id);
 
     if (!ticket) {
@@ -201,11 +268,7 @@ export const updateTicket = async (req, res) => {
       });
     }
 
-    if (
-      req.user.role === 'technician' &&
-      ticket.assignedTo &&
-      ticket.assignedTo.toString() !== req.user._id.toString()
-    ) {
+    if (req.user.role === 'technician' && !canAccessTicket(req.user, ticket)) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this ticket'
@@ -236,11 +299,7 @@ export const updateTicket = async (req, res) => {
     });
   } catch (error) {
     console.error('Update ticket error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error updating ticket',
-      error: error.message
-    });
+    return sendControllerError(res, error, 'Error updating ticket');
   }
 };
 
@@ -251,6 +310,20 @@ export const addComment = async (req, res) => {
   try {
     const { text } = req.body;
 
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ticket ID'
+      });
+    }
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Comment text is required'
+      });
+    }
+
     const ticket = await Ticket.findById(req.params.id);
 
     if (!ticket) {
@@ -260,9 +333,16 @@ export const addComment = async (req, res) => {
       });
     }
 
+    if (!canAccessTicket(req.user, ticket)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to comment on this ticket'
+      });
+    }
+
     ticket.comments.push({
       user: req.user._id,
-      text,
+      text: text.trim(),
       createdAt: new Date()
     });
 
@@ -276,11 +356,7 @@ export const addComment = async (req, res) => {
     });
   } catch (error) {
     console.error('Add comment error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error adding comment',
-      error: error.message
-    });
+    return sendControllerError(res, error, 'Error adding comment');
   }
 };
 
@@ -290,6 +366,13 @@ export const addComment = async (req, res) => {
 export const assignTicket = async (req, res) => {
   try {
     const { technicianId } = req.body;
+
+    if (!isValidId(req.params.id) || (technicianId && !isValidId(technicianId))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ticket or technician ID'
+      });
+    }
 
     const ticket = await Ticket.findById(req.params.id);
 
@@ -343,11 +426,7 @@ export const assignTicket = async (req, res) => {
     });
   } catch (error) {
     console.error('Assign ticket error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error assigning ticket',
-      error: error.message
-    });
+    return sendControllerError(res, error, 'Error assigning ticket');
   }
 };
 

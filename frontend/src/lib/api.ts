@@ -188,6 +188,17 @@ class ApiService {
   async getChatbotStatus() {
     return this.request('/chatbot/status');
   }
+
+  async getConsultationLogs(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    return this.request(`/chatbot/consultations${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async clearConsultationLogs() {
+    return this.request('/chatbot/consultations', {
+      method: 'DELETE',
+    });
+  }
 }
 
 export default new ApiService();

@@ -1,5 +1,10 @@
 import express from 'express';
-import { sendMessage, getChatbotStatus } from '../controllers/chatbotController.js';
+import {
+	sendMessage,
+	getChatbotStatus,
+	getConsultationLogs,
+	clearConsultationLogs
+} from '../controllers/chatbotController.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -16,5 +21,15 @@ router.post('/message', sendMessage);
 // @desc    Get chatbot status
 // @access  Private
 router.get('/status', getChatbotStatus);
+
+// @route   GET /api/chatbot/consultations
+// @desc    Get consultation logs
+// @access  Private
+router.get('/consultations', getConsultationLogs);
+
+// @route   DELETE /api/chatbot/consultations
+// @desc    Clear consultation logs (admin clears all, others clear own)
+// @access  Private
+router.delete('/consultations', clearConsultationLogs);
 
 export default router;

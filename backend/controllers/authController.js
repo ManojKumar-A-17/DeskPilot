@@ -8,8 +8,15 @@ export const signup = async (req, res) => {
   try {
     const { username, email, password, role, department, phoneNumber } = req.body;
 
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide username, email, and password'
+      });
+    }
+
     // Check if user exists with email
-    const emailExists = await User.findOne({ email });
+    const emailExists = await User.findOne({ email: email.toLowerCase() });
     if (emailExists) {
       return res.status(400).json({
         success: false,

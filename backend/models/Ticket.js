@@ -109,7 +109,7 @@ const ticketSchema = new mongoose.Schema({
 
 // Generate ticket number before saving
 ticketSchema.pre('save', async function(next) {
-  if (this.isNew) {
+  if (this.isNew && !this.ticketNumber) {
     const count = await mongoose.model('Ticket').countDocuments();
     this.ticketNumber = `TKT-${String(count + 1).padStart(6, '0')}`;
   }
